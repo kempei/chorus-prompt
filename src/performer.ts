@@ -8,7 +8,7 @@ import {
   type EvenHubEvent,
 } from '@evenrealities/even_hub_sdk'
 import { getAdvW, getTextWidth } from '@evenrealities/pretext'
-import type { PhysicalLine, Settings, Song } from './types'
+import type { PhysicalLine, Settings, Song, UpDownMode } from './types'
 import {
   BODY_W,
   BODY_H,
@@ -22,12 +22,19 @@ import {
 } from './layout'
 
 // Drives the glasses display for one (possibly movement-spanning) song per
-// spec.md's ring mapping:
+// this project's ring mapping:
 //   CLICK        -> next data (next window of the current block, or next
 //                   block once the current one is fully shown)
-//   UP/DOWN      -> jump to the previous/next practice- or page-number
-//                   boundary (whichever spec.md's phone-side setting picks)
-//   DOUBLE_CLICK -> repeat the last UP/DOWN direction 10 boundaries at once
+//   UP/DOWN      -> jump to the previous/next boundary of the current
+//                   UP/DOWN unit (practice number / page number / heading2 /
+//                   heading3 — see UP_DOWN_MODES below)
+//   DOUBLE_CLICK -> open an on-glasses picker to change that unit for the
+//                   rest of this performance
+//
+// The phone's Settings.upDownMode (src/settings.ts, src/ui.ts) only supplies
+// the *starting* unit for a new performance; the double-tap picker below is
+// the only way to change it afterwards, and that choice is session-local
+// (never written back to Settings) per user decision.
 //
 // There is deliberately no glasses-side exit gesture: the phone's "back to
 // library" button (src/ui.ts) is the sole, official way to stop a
@@ -36,11 +43,30 @@ import {
 // reaching the app (per user decision — never verified in the simulator,
 // which doesn't emulate that firmware behavior either).
 //
+// The picker is a plain hand-rolled list rendered into the existing body/
+// footer TextContainers (cursor drawn as "> "), not the SDK's
+// ListContainerProperty/MenuContainerProperty. Those exist (SDK 0.0.14) and
+// would auto-manage selection, but their selection-event schema has never
+// been exercised against this simulator; reusing the already-verified
+// textContainerUpgrade path keeps this feature's behavior fully within code
+// we control and can test today. Revisit if glasses-side song selection ever
+// needs those container types (see CLAUDE.md).
+//
 // Mirrors the text-heavy template's proven container lifecycle (flicker-free
 // textContainerUpgrade, serialized bridge writes) rather than re-deriving it.
 
 const BODY_CONTAINER_ID = 1
 const FOOTER_CONTAINER_ID = 2
+
+// Order shown in the double-tap picker; mirrors the phone settings screen's
+// practice/page ordering with the two heading units appended after.
+const UP_DOWN_MODES: UpDownMode[] = ['practice', 'page', 'heading2', 'heading3']
+const UP_DOWN_MODE_LABELS: Record<UpDownMode, string> = {
+  practice: '練習番号ごと',
+  page: 'ページ番号ごと',
+  heading2: '見出し2ごと',
+  heading3: '見出し3ごと',
+}
 
 export interface PerformanceHandle {
   stop(): void
@@ -57,7 +83,11 @@ export async function startPerformance(
   const maxLines = MAX_BODY_LINES
   let blockIndex = Math.min(Math.max(song.lastPosition.blockIndex, 0), song.blocks.length - 1)
   let lineOffset = song.lastPosition.lineOffset
-  let lastScrollDirection: 1 | -1 | null = null
+  // The default from Settings, changeable for the rest of this performance
+  // via the double-tap picker below — never written back to Settings.
+  let upDownMode: UpDownMode = settings.upDownMode
+  // Non-null while the double-tap picker is on screen; index into UP_DOWN_MODES.
+  let picker: { selection: number } | null = null
 
   // Whether a number/title is meaningful anywhere in this song — spec.md:
   // an item stuck at its default value the whole way through is forced off
@@ -216,17 +246,22 @@ export async function startPerformance(
     render()
   }
 
-  function jumpBoundary(direction: 1 | -1, mode: Settings['upDownMode'], steps: number) {
-    const target = findBoundary(direction, mode, steps)
+  function jumpBoundary(direction: 1 | -1, mode: UpDownMode) {
+    const target = findBoundary(direction, mode)
     if (!target) return
     blockIndex = target.blockIndex
     lineOffset = target.lineIndex
     render()
   }
 
-  function valueAt(pos: { blockIndex: number; lineIndex: number }, mode: Settings['upDownMode']): number | string {
+  function valueAt(pos: { blockIndex: number; lineIndex: number }, mode: UpDownMode): number | string {
     const line = song.blocks[pos.blockIndex].lines[pos.lineIndex]
-    return mode === 'page' ? line.pageNumber : line.practiceNumber
+    switch (mode) {
+      case 'page': return line.pageNumber
+      case 'practice': return line.practiceNumber
+      case 'heading2': return line.movementIndex
+      case 'heading3': return line.sectionIndex
+    }
   }
 
   function stepPos(
@@ -245,24 +280,67 @@ export async function startPerformance(
     return null
   }
 
-  function findBoundary(
-    direction: 1 | -1,
-    mode: Settings['upDownMode'],
-    steps: number,
-  ): { blockIndex: number; lineIndex: number } | null {
-    let pos: { blockIndex: number; lineIndex: number } = { blockIndex, lineIndex: lineOffset }
-    let referenceValue = valueAt(pos, mode)
-    let found: { blockIndex: number; lineIndex: number } | null = null
+  // Walks in `direction` from the current position until `mode`'s value
+  // differs from where we started — i.e. the next/previous boundary.
+  function findBoundary(direction: 1 | -1, mode: UpDownMode): { blockIndex: number; lineIndex: number } | null {
+    const pos: { blockIndex: number; lineIndex: number } = { blockIndex, lineIndex: lineOffset }
+    const referenceValue = valueAt(pos, mode)
+    let next = stepPos(pos, direction)
+    while (next && valueAt(next, mode) === referenceValue) next = stepPos(next, direction)
+    return next
+  }
 
-    for (let remaining = steps; remaining > 0; remaining--) {
-      let next = stepPos(pos, direction)
-      while (next && valueAt(next, mode) === referenceValue) next = stepPos(next, direction)
-      if (!next) break
-      pos = next
-      referenceValue = valueAt(pos, mode)
-      found = pos
-    }
-    return found
+  // --- Double-tap UP/DOWN-unit picker ---------------------------------
+  // A plain hand-rolled list drawn into the same body/footer containers
+  // (cursor as "> "), not ListContainerProperty/MenuContainerProperty — see
+  // the file-level comment for why.
+
+  function openModePicker() {
+    picker = { selection: UP_DOWN_MODES.indexOf(upDownMode) }
+    renderPicker()
+  }
+
+  function movePicker(direction: 1 | -1) {
+    if (!picker) return
+    picker.selection = Math.min(Math.max(picker.selection + direction, 0), UP_DOWN_MODES.length - 1)
+    renderPicker()
+  }
+
+  function confirmPicker() {
+    if (!picker) return
+    upDownMode = UP_DOWN_MODES[picker.selection]
+    picker = null
+    render()
+  }
+
+  function renderPicker() {
+    if (!picker) return
+    const bodyText = [
+      'UP/DOWNの単位を選択',
+      ...UP_DOWN_MODES.map((mode, i) => `${i === picker!.selection ? '>' : ' '} ${UP_DOWN_MODE_LABELS[mode]}`),
+    ].join('\n')
+
+    blinkTimers.forEach(id => window.clearTimeout(id))
+    blinkTimers = []
+
+    rendering = rendering.then(async () => {
+      await bridge.textContainerUpgrade(
+        new TextContainerUpgrade({
+          containerID: BODY_CONTAINER_ID,
+          containerName: 'body',
+          content: bodyText,
+          textColor: settings.brightness,
+        }),
+      )
+      await bridge.textContainerUpgrade(
+        new TextContainerUpgrade({
+          containerID: FOOTER_CONTAINER_ID,
+          containerName: 'footer',
+          content: 'UP/DOWN:選択　クリック:決定',
+          textColor: footerDimBrightness(),
+        }),
+      )
+    })
   }
 
   let stopped = false
@@ -280,26 +358,33 @@ export async function startPerformance(
     const sysType = eventTypeOf(event.sysEvent)
     const textType = eventTypeOf(event.textEvent)
 
+    if (sysType === OsEventTypeList.SYSTEM_EXIT_EVENT || sysType === OsEventTypeList.ABNORMAL_EXIT_EVENT) {
+      stop()
+      return
+    }
+
+    if (picker) {
+      if (textType === OsEventTypeList.SCROLL_TOP_EVENT) movePicker(-1)
+      else if (textType === OsEventTypeList.SCROLL_BOTTOM_EVENT) movePicker(1)
+      else if (sysType === OsEventTypeList.CLICK_EVENT || textType === OsEventTypeList.CLICK_EVENT) confirmPicker()
+      // Anything else (notably another double-click) is ignored while picking.
+      return
+    }
+
     if (sysType === OsEventTypeList.CLICK_EVENT || textType === OsEventTypeList.CLICK_EVENT) {
       advanceClick()
       return
     }
     if (textType === OsEventTypeList.SCROLL_TOP_EVENT) {
-      lastScrollDirection = -1
-      jumpBoundary(-1, settings.upDownMode, 1)
+      jumpBoundary(-1, upDownMode)
       return
     }
     if (textType === OsEventTypeList.SCROLL_BOTTOM_EVENT) {
-      lastScrollDirection = 1
-      jumpBoundary(1, settings.upDownMode, 1)
+      jumpBoundary(1, upDownMode)
       return
     }
     if (sysType === OsEventTypeList.DOUBLE_CLICK_EVENT || textType === OsEventTypeList.DOUBLE_CLICK_EVENT) {
-      if (lastScrollDirection !== null) jumpBoundary(lastScrollDirection, settings.upDownMode, 10)
-      return
-    }
-    if (sysType === OsEventTypeList.SYSTEM_EXIT_EVENT || sysType === OsEventTypeList.ABNORMAL_EXIT_EVENT) {
-      stop()
+      openModePicker()
     }
   })
 

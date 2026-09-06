@@ -17,6 +17,13 @@ export interface PhysicalLine {
   practiceNumber: string
   /** Index into Song.movements, or -1 for content before any heading. */
   movementIndex: number
+  /**
+   * Monotonic count of `### ` headings seen so far (0 before the first one),
+   * for UP/DOWN navigation by "heading3" — unlike movementIndex, `###` lines
+   * stay visible in the body (there's no footer slot for a sub-heading
+   * title), this is purely a boundary counter alongside them.
+   */
+  sectionIndex: number
 }
 
 // A display unit: lines separated by a blank line (or a movement heading) in
@@ -39,11 +46,18 @@ export interface Song {
   lastPosition: { blockIndex: number; lineOffset: number }
 }
 
+export type UpDownMode = 'practice' | 'page' | 'heading2' | 'heading3'
+
 export interface Settings {
   /** Glasses text brightness, 0-4 (firmware range; see MAX_TEXT_BRIGHTNESS). */
   brightness: number
   showPracticeNumber: boolean
   showPageNumber: boolean
   showTitle: boolean
-  upDownMode: 'practice' | 'page'
+  /**
+   * Default UP/DOWN unit for a new performance. The performer can change it
+   * mid-performance via the glasses-side double-tap picker (performer.ts);
+   * that in-session choice doesn't write back here.
+   */
+  upDownMode: UpDownMode
 }

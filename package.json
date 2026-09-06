@@ -8,6 +8,7 @@
     "build": "tsc --noEmit && vite build",
     "preview": "vite preview",
     "pack": "npm run build && evenhub pack app.json dist",
+    "release": "bash scripts/release.sh",
     "simulate": "evenhub-simulator http://localhost:5173",
     "postinstall": "test -f node_modules/@evenrealities/evenhub-simulator/bin/index.js && ln -sf ../@evenrealities/evenhub-simulator/bin/index.js node_modules/.bin/evenhub-simulator || true"
   },

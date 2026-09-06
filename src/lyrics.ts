@@ -9,10 +9,16 @@ import type { Block, Movement, PhysicalLine } from './types'
 //   entire large work (e.g. a whole passion or requiem) split into many
 //   movements, or a whole concert program — the footer shows whichever one
 //   the performer is currently in.
-// - `<N>` at the start of a line sets the page number in effect from that
-//   line on (default 0 until the first marker); `[X]` does the same for the
-//   practice/rehearsal number (default "0"). Either can appear in either
-//   order, and persist until the next marker.
+// - `### Title` marks a sub-heading for UP/DOWN's "heading3" navigation unit
+//   (performer.ts). Unlike `##`, it doesn't get a footer slot, so the line
+//   stays visible in the body (just `###` stripped, same as any other
+//   heading prefix) — this only additionally bumps a boundary counter
+//   alongside it.
+// - `<N>` anywhere in a line sets the page number in effect from that line
+//   on (default 0 until the first marker); `[X]` does the same for the
+//   practice/rehearsal number (default "0"). Either can appear anywhere in
+//   the line, in either order, possibly more than once (last one on the
+//   line wins), and persist until the next marker.
 // - A "block" (spec.md's 固まり) is the span between blank lines, and never
 //   crosses a movement boundary. The performer slides a fixed-height window
 //   over a block's wrapped lines; blocks are never merged (unlike a generic
@@ -20,14 +26,15 @@ import type { Block, Movement, PhysicalLine } from './types'
 //   here one tap must line up with the song's structure).
 
 const HEADING_RE = /^##(?!#)\s+(?:(\S+)\.\s+)?(.+)$/
-const PAGE_MARKER_RE = /^<(\d+)>/
-const PRACTICE_MARKER_RE = /^\[([^\]]+)\]/
+const HEADING3_RE = /^###(?!#)\s+(.+)$/
+const MARKER_RE = /<(\d+)>|\[([^\]]+)\]/g
 
 interface RawContentLine {
   text: string
   pageNumber: number
   practiceNumber: string
   movementIndex: number
+  sectionIndex: number
 }
 
 export function parseSong(source: string): { movements: Movement[]; blocks: Block[] } {
@@ -39,6 +46,7 @@ export function parseSong(source: string): { movements: Movement[]; blocks: Bloc
   let movementIndex = -1
   let pageNumber = 0
   let practiceNumber = '0'
+  let sectionIndex = 0
 
   const flush = () => {
     if (currentBlock.length > 0) rawBlocks.push(currentBlock)
@@ -59,29 +67,27 @@ export function parseSong(source: string): { movements: Movement[]; blocks: Bloc
       continue
     }
 
-    let rest = line
-    let strippedMarker = true
-    while (strippedMarker) {
-      strippedMarker = false
-      const pageMatch = PAGE_MARKER_RE.exec(rest)
-      if (pageMatch) {
-        pageNumber = Number(pageMatch[1])
-        rest = rest.slice(pageMatch[0].length)
-        strippedMarker = true
-        continue
-      }
-      const practiceMatch = PRACTICE_MARKER_RE.exec(rest)
-      if (practiceMatch) {
-        practiceNumber = practiceMatch[1]
-        rest = rest.slice(practiceMatch[0].length)
-        strippedMarker = true
-      }
+    if (HEADING3_RE.test(line)) sectionIndex++
+
+    let rest = ''
+    let cursor = 0
+    MARKER_RE.lastIndex = 0
+    let marker: RegExpExecArray | null
+    while ((marker = MARKER_RE.exec(line)) !== null) {
+      rest += line.slice(cursor, marker.index)
+      if (marker[1] !== undefined) pageNumber = Number(marker[1])
+      else practiceNumber = marker[2]
+      cursor = marker.index + marker[0].length
+      // A marker written as its own word (spaces on both sides) would
+      // otherwise leave a double space behind once removed.
+      if (rest.endsWith(' ') && line[cursor] === ' ') cursor++
     }
+    rest += line.slice(cursor)
 
     const text = stripLine(rest)
     if (!text) continue // a marker-only line just updates state, prints nothing
 
-    currentBlock.push({ text, pageNumber, practiceNumber, movementIndex })
+    currentBlock.push({ text, pageNumber, practiceNumber, movementIndex, sectionIndex })
   }
   flush()
 
@@ -92,6 +98,7 @@ export function parseSong(source: string): { movements: Movement[]; blocks: Bloc
         pageNumber: rawLine.pageNumber,
         practiceNumber: rawLine.practiceNumber,
         movementIndex: rawLine.movementIndex,
+        sectionIndex: rawLine.sectionIndex,
       })),
     ),
   }))

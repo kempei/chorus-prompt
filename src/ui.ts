@@ -1,4 +1,4 @@
-import type { Settings, Song } from './types'
+import type { Settings, Song, UpDownMode } from './types'
 
 // Phone-screen UI: a plain library list (no framework — the whole app is a
 // couple hundred lines, a framework would be pure overhead). Re-renders the
@@ -63,10 +63,12 @@ export function renderLibrary(
         </label>
 
         <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#B5B5B5;">
-          UP / DOWN（リング上下スワイプ）で移動する単位
+          UP / DOWN（リング上下スワイプ）で移動する単位の既定値（演奏中はグラス側のダブルタップでいつでも変更できます）
           <select name="upDownMode" style="${inputStyle}">
             <option value="practice" ${settings.upDownMode === 'practice' ? 'selected' : ''}>練習番号ごと</option>
             <option value="page" ${settings.upDownMode === 'page' ? 'selected' : ''}>ページ番号ごと</option>
+            <option value="heading2" ${settings.upDownMode === 'heading2' ? 'selected' : ''}>見出し2ごと</option>
+            <option value="heading3" ${settings.upDownMode === 'heading3' ? 'selected' : ''}>見出し3ごと</option>
           </select>
         </label>
       </form>
@@ -103,7 +105,7 @@ export function renderLibrary(
       showPracticeNumber: data.get('showPracticeNumber') != null,
       showTitle: data.get('showTitle') != null,
       showPageNumber: data.get('showPageNumber') != null,
-      upDownMode: data.get('upDownMode') === 'page' ? 'page' : 'practice',
+      upDownMode: asUpDownMode(data.get('upDownMode')),
     })
   })
 }
@@ -114,7 +116,7 @@ export function renderPerforming(root: HTMLElement, song: Song, onBack: () => vo
       <h1 style="font-size:18px;font-weight:600;margin:0 0 8px;">${escapeHtml(song.title)}</h1>
       <p style="font-size:13px;color:#919191;margin:0 0 4px;">グラスに表示中 — R1 / タッチパッドで操作してください</p>
       <p style="font-size:12px;color:#7B7B7B;margin:0 0 20px;">
-        クリック: 次へ&emsp;上スワイプ: 前の番号へ&emsp;下スワイプ: 次の番号へ&emsp;ダブルタップ: 直前方向へ10移動
+        クリック: 次へ&emsp;上スワイプ: 前の単位へ&emsp;下スワイプ: 次の単位へ&emsp;ダブルタップ: 移動単位を選択
       </p>
       <button id="back-btn" style="${buttonStyle('#E5716A')}">
         終了してライブラリに戻る（グラスの表示も終了します）
@@ -169,6 +171,12 @@ const checkboxLabelStyle = 'display:flex;align-items:center;gap:8px;font-size:13
 
 function buttonStyle(bg: string): string {
   return `flex:1;background:${bg};border:none;border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;font-weight:500;`
+}
+
+const UP_DOWN_MODES: UpDownMode[] = ['practice', 'page', 'heading2', 'heading3']
+
+function asUpDownMode(value: FormDataEntryValue | null): UpDownMode {
+  return UP_DOWN_MODES.includes(value as UpDownMode) ? (value as UpDownMode) : 'practice'
 }
 
 function escapeHtml(text: string): string {

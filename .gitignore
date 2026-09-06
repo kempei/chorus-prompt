@@ -1,5 +1,7 @@
 node_modules/
 dist/
+releases/
+*.ehpk
 .claude/settings.local.json
 .DS_Store
 *.log
