@@ -10,37 +10,47 @@ Herr! Herr! Herr!
 
 ## DIE ÄLTESTEN (長老たち)
 
-<19>[27]Herr, du bist würdig, bist würdig zu nehmen allein Preis,
-Ehre und Macht. Ehre und Macht.
+<19>[27]Herr, du bist würdig,
+bist würdig zu nehmen allein Preis, Ehre und Macht.
+Ehre und Macht.
+
 [28]Denn du hast <20>alle Dinge geschaffen und durch deinen Willen haben sie ihr [29]Wesen und sind <21>geschaffen.
 
-[30]Gott, Gott ist <22>heilig, heilig ist der Herr. Der Herr ist heilig.
-der da <23>war und der da ist und der da [31]kommt.
+[30]Gott, Gott ist <22>heilig, heilig ist der Herr.
+Der Herr ist heilig.
+
+der da <23>war und ist und der da [31]kommt.
 
 <24>Heilig ist Gott der Allmächtige.
 Amen!
 
 ## Nun sah ich und siehe
 
-[44]<30> (Johan.) Nun sah ich und siehe, mittn vor dem Throne und den vier Wesen
-und in-(立つ)-mitten der [45]Ältesten ein Lamm...
-
-[46]<31>O sehet! O sehet! Dort mitten vor dem Throne und den vier <32>Wesen und inmitten und inmitten der Ältesten ein Lamm, ein Lamm, ein [47]Lamm!
+[46]<31>O sehet! O sehet! Dort mitten vor dem Throne und den vier <32>Wesen
+und inmitten und inmitten der Ältesten ein Lamm, ein Lamm, ein [47]Lamm!
 
 [48]<33>Wie es geschlachtet wäre.
 
-[49]<34>Mit seinem Blute uns erlöst, Mit seinem Blute uns erlöst aus vielerlei Geschlecht und [50]Zunge, Volk und Landen.
+[49]<34>Mit seinem Blute uns erlöst,
+Mit seinem Blute uns erlöst aus vielerlei Geschlecht und [50]Zunge, Volk und Landen.
 
 [51]<35>Und das <36>Lamm, [52]es nahm das Buch aus der rechten Hand des Herrn.
 
 ## Du bist würdig
 
-<38>[56]Du bist würdig, zu nehmen das Buch, denn <39>du hast die Macht, seine Siegel zu [57]brechen.
+<38>[56]Du bist würdig, zu nehmen das Buch,
+denn <39>du hast die Macht, seine Siegel zu [57]brechen.
+
 Du ließest dich schlachten und hast uns erlöset. Du ließest dich schlachten und hast uns [58]<40>erlöset.
-Herr, o Herr, der du sitzt auf dem Thron, dir sei Lob und Ehre in Ewigkeit!
-[59]Du hast uns zu <41>Priestern gemacht und zu Königen, zu einem Reich. Wir werden herrschen.
-Du hast uns Reich [60]gemacht.  
-Dir, o <42>Herr, und dem Lamm sei Gewalt, Macht, Ehre und Lobpreis in Ewigkeit!
+Herr, o Herr, der du sitzt auf dem Thron,
+dir sei Lob und Ehre in Ewigkeit!
+
+[59]Du hast uns zu <41>Priestern gemacht und zu Königen,
+zu einem Reich. Wir werden herrschen.
+Du hast uns zu einem Reich [60]gemacht.
+Dir, o <42>Herr, und dem Lamm sei Gewalt,
+
+Macht, Ehre und Lobpreis in Ewigkeit!
 [61]Amen!
 
 ## 7　第一の封印
@@ -53,29 +63,38 @@ Er wird auch genannt: „Treu und Wahrhaftig“.
 
 [66]Seine Augen sind wie eine Feuerflamme, <50>und auf seinem Haupte viele Diademe.
 und bekleidet mit einem Gewande, getränkt mit Blut.
+
 [67]Er selbst wird die Herde der Völker weiden mit eisernem Stabe.
-<51>Und er wird treten die Kelter des Glühweines des Zornes Gottes des Allmächtigen.
+<51>Und er wird treten die Kelter
+er wird treten die Kelter des Glühweines des Zornes, des Zornes Gottes
+des Allmächtigen.
+
 <51>[68]Der König der Könige! Der Herr der Herren!
 Als Sieger zieht er aus, um zu siegen im Namen des Herrn.
-[69]Die himmlischen <53>Heerscharen folgen ihm auf weißen Rossen, in weißem Linnen.
-Sie ziehen aus mit ihm zum Sieg.
+[69]Die himmlischen <53>Heerscharen folgen ihm auf weißen Rossen,
+in weißem Linnen. Sie ziehen aus mit ihm zum Sieg.
 
 ## 8　第二の封印
 
 [73]<57>Tötet, erwürget, erschlaget den Feind!
 Schonet niemand, zerstöret, verwüstet, was euer Arm erreicht!
-[74]<59> Heulende Weiber! Nein! <60>Ihr seid des [75]Todes, seid des Todes! Ihr und eure Brut!
+
+[74]<59> Heulende Weiber! Nein!
+<60>Ihr seid des [75]Todes, seid des Todes! Ihr und eure Brut!
 
 <61>Tötet, erwürget, erschlaget den Feind!
 Schonet niemand, zerstöret, verwüstet, was euer Arm <62>erreicht!
-Schlagt um euch! Mordet! Zündet an! Plündert! Schonet das Kind nicht im Mutterleibe! Seid [76]<63>stark!
-<64>Heulende Weiber! Nein! Nein! <65>Ihr seid des [77]Todes, Ihr alle, ihr alle, ihr a--lle des Todes! Nein! Keine <66>Gnade euch!
+Schlagt=um=euch! Mordet! Zündet an! Plündert! Schonet das Kind nicht im Mutterleibe! Seid [76]<63>stark!
+
+<64>Heulende Weiber! Nein! Nein!
+<65>Ihr seid des [77]Todes, Ihr alle, ihr alle, ihr alle des Todes! Nein! Keine <66>Gnade euch!
 Ihr, die ihr heiter und sorglos und glücklich und reich waret, dem Tode verfallen seid <67>ihr Heulenden!
 
 [78]Das Plündern, das Rauben, das Morden ist Rache und Lust!
 Herrlich ist der <68>Krieg!
 Werft euch auf den Feind!
 Zündet an! Das Brennen, das Plündern, das Morden ist Rache!
+
 Rache! Das Rauben, das Morden hat niemals ein <69>Ende!
 
 ## 11　第五の封印(殉教者の叫び)
