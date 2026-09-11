@@ -106,12 +106,13 @@ bis wann denn <83>richtest du und rächest unser Blut
 <84>[98]Herr, du heiliger und wahrhaftiger;
 o Herr, bis wann denn richtest du und rächest unser Blut an denen,
 die auf der Erde [99]wohnen? Herr, bis wann rächest du unser <85>Blut?
+
 Herr, bis wann richtest du? Herr, bis wann richtest du?
-Herr, bis wann denn rächest unser Blut an denen,
+Herr, bis wann denn rächest du unser Blut an denen,
 die auf der Erde wohnen? Herr, bis <86>wann denn rächest du [100]uns?
 
 Herr, bis wann, bis wann [101]richtest du und <87>rächest unser Blut an denen,
-die auf der Erde wohnen, die auf der Erde wohnen, [102]die auf Erde wohnen?
+die auf der Erde wohnen, die auf der Erde wohnen, [102]die auf der Erde wohnen?
 Herr, bis wann denn richtest du?
 
 <88>Herr, bis wann richtest du? Herr, bis wann rächest du unser Blut? Wann denn?
@@ -119,7 +120,9 @@ Herr! Wann denn? Herr, wann denn richtest du?
 [103] Herr, bis <89>wann denn, Herr, bis wann denn richtest du, Herr?
 
 [104]Herr, du heiliger, und wahrhaftier, o Herr, <90>
-bis wann denn richtest du und rächest unser Blut an denen, die auf der Erde [105]wohnen? Herr, bis wann rächest du unser Blut? Herr bis wann <91>richtest du? Herr bis wann rächest du unser Blut?
+bis wann denn richtest du und rächest unser Blut an denen,
+die auf der Erde [105]wohnen? Herr, bis wann rächest du unser Blut?
+Herr bis wann <91>richtest du? Herr bis wann rächest du unser Blut?
 Herr, bis wann, o Herr!
 
 [106]Herr, du heiliger
@@ -134,7 +137,8 @@ Bis wann, o [107]Herr?
 [113]<96>Die Erde wankt! Es schwankt der Boden! Wehe!
 Weh! Weh! Weh!
 
-[114]<97>Die Erde wankt! Es wanket die Erde und es bebt und schwankt der Boden! [115]Wehe!
+[114]<97>Die Erde wankt! Es schwankt der Boden!
+Es wanket die Erde und es bebt und schwankt der Boden! [115]Wehe!
 Weh! Weh! <98>Weh!
 
 O seht, der Mond ist rot
@@ -149,7 +153,7 @@ O seht, der Mond ist rot
 <102>[122]Seht! Die Sterne fallen auf die Erde!
 Sie fallen wie die Früchte des Feigenbaums, den der Sturm rüttelt.
 
-<103>[123]Seht! Die Sterne fallen auf die Erde!
+<103>[123]Die Sterne fallen auf die Erde!
 Welch grausiger Hagel!
 Es schwillt <104>das Meer und steiget höher [124]und immer <105>höher! 
 Ha! Immer höher!
@@ -237,7 +241,7 @@ Ewig ist seine Gewalt über [200]alles.
 Gott der <166>Herr regiert die Welt!
 
 Sein Reich ist überall.
-[201]Gott untertan sind alle <167>Reiche dieser Welt und seine Herrschaft währet ewig.
+[201]Gott untertan sind alle <167>Reiche dieser Welt und seine Herrschaft währet ewig, ewig.
 [202]Gott hat die Herrschergewalt über alle <168>Reiche dieser Welt an sich genommen.
 [203]Alle Reiche dieser Welt sind Gottes Herrschaft untertan.
 
