@@ -65,6 +65,7 @@ export function renderLibrary(
         <label style="display:flex;flex-direction:column;gap:4px;font-size:12px;color:#B5B5B5;">
           UP / DOWN（リング上下スワイプ）で移動する単位の既定値（演奏中はグラス側のダブルタップでいつでも変更できます）
           <select name="upDownMode" style="${inputStyle}">
+            <option value="window" ${settings.upDownMode === 'window' ? 'selected' : ''}>1画面ごと（単純に送り戻し）</option>
             <option value="practice" ${settings.upDownMode === 'practice' ? 'selected' : ''}>練習番号ごと</option>
             <option value="page" ${settings.upDownMode === 'page' ? 'selected' : ''}>ページ番号ごと</option>
             <option value="heading2" ${settings.upDownMode === 'heading2' ? 'selected' : ''}>見出し2ごと</option>
@@ -173,7 +174,7 @@ function buttonStyle(bg: string): string {
   return `flex:1;background:${bg};border:none;border-radius:8px;padding:9px 12px;color:#fff;font-size:13px;font-weight:500;`
 }
 
-const UP_DOWN_MODES: UpDownMode[] = ['practice', 'page', 'heading2', 'heading3']
+const UP_DOWN_MODES: UpDownMode[] = ['window', 'practice', 'page', 'heading2', 'heading3']
 
 function asUpDownMode(value: FormDataEntryValue | null): UpDownMode {
   return UP_DOWN_MODES.includes(value as UpDownMode) ? (value as UpDownMode) : 'practice'

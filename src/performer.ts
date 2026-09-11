@@ -26,8 +26,8 @@ import {
 //   CLICK        -> next data (next window of the current block, or next
 //                   block once the current one is fully shown)
 //   UP/DOWN      -> jump to the previous/next boundary of the current
-//                   UP/DOWN unit (practice number / page number / heading2 /
-//                   heading3 — see UP_DOWN_MODES below)
+//                   UP/DOWN unit (display window / practice number / page
+//                   number / heading2 / heading3 — see UP_DOWN_MODES below)
 //   DOUBLE_CLICK -> open an on-glasses picker to change that unit for the
 //                   rest of this performance
 //
@@ -59,9 +59,14 @@ const BODY_CONTAINER_ID = 1
 const FOOTER_CONTAINER_ID = 2
 
 // Order shown in the double-tap picker; mirrors the phone settings screen's
-// practice/page ordering with the two heading units appended after.
-const UP_DOWN_MODES: UpDownMode[] = ['practice', 'page', 'heading2', 'heading3']
+// window/practice/page ordering with the two heading units appended after.
+const UP_DOWN_MODES: UpDownMode[] = ['window', 'practice', 'page', 'heading2', 'heading3']
+// "window" is labeled with 画面 rather than ページ specifically to avoid
+// reading as a synonym of the pre-existing ページ番号ごと mode below — that
+// one jumps to inline [X] page-number markers, this one just re-pages the
+// display by one screen's worth of lines in either direction.
 const UP_DOWN_MODE_LABELS: Record<UpDownMode, string> = {
+  window: '1画面ごと（単純に送り戻し）',
   practice: '練習番号ごと',
   page: 'ページ番号ごと',
   heading2: '見出し2ごと',
@@ -235,18 +240,42 @@ export async function startPerformance(
   }
 
   function advanceClick() {
+    advanceWindow(1)
+  }
+
+  // Re-pages the display by one screen's worth of lines: CLICK always goes
+  // forward (direction 1); the "window" UP/DOWN mode reuses this for both
+  // directions. Forward mirrors the sliding-window algorithm's overlap step
+  // (maxLines - 1); backward is the same step mirrored, landing on the
+  // previous block's last (possibly extra-overlapping, per clampOffset)
+  // window when already at the start of the current block.
+  function advanceWindow(direction: 1 | -1) {
     const block = song.blocks[blockIndex]
-    const end = clampOffset(lineOffset, block.lines.length) + Math.min(maxLines, block.lines.length)
-    if (end < block.lines.length) {
-      lineOffset += maxLines - 1 // clamped again on next render
-    } else if (blockIndex < song.blocks.length - 1) {
-      blockIndex++
-      lineOffset = 0
+    const currentOffset = clampOffset(lineOffset, block.lines.length)
+    if (direction === 1) {
+      const end = currentOffset + Math.min(maxLines, block.lines.length)
+      if (end < block.lines.length) {
+        lineOffset = currentOffset + maxLines - 1 // clamped again on next render
+      } else if (blockIndex < song.blocks.length - 1) {
+        blockIndex++
+        lineOffset = 0
+      }
+    } else {
+      if (currentOffset > 0) {
+        lineOffset = currentOffset - (maxLines - 1) // clamped to 0 by clampOffset on render
+      } else if (blockIndex > 0) {
+        blockIndex--
+        lineOffset = Number.MAX_SAFE_INTEGER // clamped to the last window by clampOffset on render
+      }
     }
     render()
   }
 
   function jumpBoundary(direction: 1 | -1, mode: UpDownMode) {
+    if (mode === 'window') {
+      advanceWindow(direction)
+      return
+    }
     const target = findBoundary(direction, mode)
     if (!target) return
     blockIndex = target.blockIndex
@@ -254,7 +283,9 @@ export async function startPerformance(
     render()
   }
 
-  function valueAt(pos: { blockIndex: number; lineIndex: number }, mode: UpDownMode): number | string {
+  // Only called for boundary-jump modes; jumpBoundary handles 'window' itself
+  // via advanceWindow before ever reaching findBoundary/valueAt.
+  function valueAt(pos: { blockIndex: number; lineIndex: number }, mode: Exclude<UpDownMode, 'window'>): number | string {
     const line = song.blocks[pos.blockIndex].lines[pos.lineIndex]
     switch (mode) {
       case 'page': return line.pageNumber
@@ -282,7 +313,10 @@ export async function startPerformance(
 
   // Walks in `direction` from the current position until `mode`'s value
   // differs from where we started — i.e. the next/previous boundary.
-  function findBoundary(direction: 1 | -1, mode: UpDownMode): { blockIndex: number; lineIndex: number } | null {
+  function findBoundary(
+    direction: 1 | -1,
+    mode: Exclude<UpDownMode, 'window'>,
+  ): { blockIndex: number; lineIndex: number } | null {
     const pos: { blockIndex: number; lineIndex: number } = { blockIndex, lineIndex: lineOffset }
     const referenceValue = valueAt(pos, mode)
     let next = stepPos(pos, direction)

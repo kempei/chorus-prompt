@@ -48,9 +48,9 @@ function randomId(): string {
   return Array.from(bytes, b => b.toString(16).padStart(2, '0')).join('')
 }
 
-export function newSong(title: string, sourceUrl: string): Song {
+export function newSong(title: string, sourceUrl: string, id: string = randomId()): Song {
   return {
-    id: randomId(),
+    id,
     title,
     sourceUrl,
     rawMarkdown: '',
@@ -60,6 +60,28 @@ export function newSong(title: string, sourceUrl: string): Song {
     syncError: null,
     lastPosition: { blockIndex: 0, lineOffset: 0 },
   }
+}
+
+const DEFAULT_SONGS_SEEDED_KEY = 'chorus-prompter:defaultSongsSeeded'
+const PRESET_SCHMITT_ID = 'preset-schmitt-seven-seals'
+
+// Ships with one hardcoded preset song so a fresh install has something to
+// play immediately, without requiring the user to find a URL first. Seeded
+// exactly once ever per device (tracked by its own flag, not "library is
+// empty") so deleting the preset later doesn't bring it back on the next
+// load with an empty library.
+export function seedDefaultSongs(songs: Song[]): Song[] {
+  if (localStorage.getItem(DEFAULT_SONGS_SEEDED_KEY)) return songs
+  localStorage.setItem(DEFAULT_SONGS_SEEDED_KEY, '1')
+  if (songs.some(s => s.id === PRESET_SCHMITT_ID)) return songs
+  return [
+    ...songs,
+    newSong(
+      'シュミット',
+      'https://raw.githubusercontent.com/kempei/chorus-prompt/main/prompts/202609-Schmitt-Seven.md',
+      PRESET_SCHMITT_ID,
+    ),
+  ]
 }
 
 export function upsertSong(songs: Song[], song: Song): Song[] {

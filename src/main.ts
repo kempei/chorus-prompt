@@ -1,6 +1,6 @@
 import { waitForEvenAppBridge } from '@evenrealities/even_hub_sdk'
 import type { Song } from './types'
-import { loadSongs, saveSongs, newSong, upsertSong, removeSong } from './library'
+import { loadSongs, saveSongs, newSong, upsertSong, removeSong, seedDefaultSongs } from './library'
 import { loadSettings, saveSettings } from './settings'
 import { syncSong } from './sync'
 import { startPerformance, type PerformanceHandle } from './performer'
@@ -10,6 +10,10 @@ const bridge = await waitForEvenAppBridge()
 const root = document.querySelector<HTMLDivElement>('#app')!
 
 let songs = loadSongs()
+const seededSongs = seedDefaultSongs(songs)
+const addedByDefault = seededSongs.slice(songs.length) // seedDefaultSongs only ever appends
+songs = seededSongs
+if (addedByDefault.length > 0) saveSongs(songs)
 let settings = loadSettings()
 const syncingIds = new Set<string>()
 // `handle` is null until startPerformance's bridge call resolves. Kept here
@@ -79,3 +83,4 @@ async function doSync(id: string) {
 }
 
 render()
+for (const song of addedByDefault) void doSync(song.id) // mirrors onAdd's auto-sync for a manually-added song

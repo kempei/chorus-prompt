@@ -46,7 +46,7 @@ export interface Song {
   lastPosition: { blockIndex: number; lineOffset: number }
 }
 
-export type UpDownMode = 'practice' | 'page' | 'heading2' | 'heading3'
+export type UpDownMode = 'practice' | 'page' | 'heading2' | 'heading3' | 'window'
 
 export interface Settings {
   /** Glasses text brightness, 0-4 (firmware range; see MAX_TEXT_BRIGHTNESS). */
