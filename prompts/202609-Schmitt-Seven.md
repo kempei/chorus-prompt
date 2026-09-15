@@ -183,7 +183,7 @@ Das Meer steiget immer noch!
 Wie das Meer schwillt! Rettet euch in die Berge dort! Rette euch!
 Das meer steiget immer noch, steiget immer höher.
 
-[132]<114>Ha! Wie das Meer schwillt! Und die Sonne gehet aud und es wird dennoch nimmer wieder helle, nimmer wieder helle.
+[132]<114>Ha! Wie das Meer schwillt! Und die Sonne gehet auf und es wird dennoch nimmer wieder helle, nimmer wieder helle.
 
 [133]Es schwillt das <115>Meer und steiget immer höher und höher noch! Rettet euch in die Berge dort, in die berge rettet euch!
 [134]Welch grauenvolle <116>Finsternis! Die Sonne geht auf und dennoch wird es nimmer helle, nimmer helle. In die Berge rette euch! Denn seht, das Meer es steigt höher und höher noch!
