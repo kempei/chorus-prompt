@@ -97,6 +97,10 @@ Zündet an! Das Brennen, das Plündern, das Morden ist Rache!
 
 Rache! Das Rauben, das Morden hat niemals ein <69>Ende!
 
+## 10 Schwaslern
+
+[88]<77>Denn harren wir aus, ist der Sieg uns gewiß.
+
 ## 11　第五の封印(殉教者の叫び)
 
 <82>[96]Herr, du heiliger und wahrhaftiger;
