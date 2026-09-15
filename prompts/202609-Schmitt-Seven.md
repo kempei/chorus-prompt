@@ -123,7 +123,7 @@ Herr, bis wann denn richtest du?
 Herr! Wann denn? Herr, wann denn richtest du?
 [103] Herr, bis <89>wann denn, Herr, bis wann denn richtest du, Herr?
 
-[104]Herr, du heiliger, und wahrhaftier, o Herr, <90>
+[104]Herr, du heiliger, und wahrhaftiger, o Herr, <90>
 bis wann denn richtest du und rächest unser Blut an denen,
 die auf der Erde [105]wohnen? Herr, bis wann rächest du unser Blut?
 Herr bis wann <91>richtest du? Herr bis wann rächest du unser Blut?
