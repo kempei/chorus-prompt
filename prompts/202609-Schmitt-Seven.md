@@ -161,7 +161,7 @@ Seht! Sie fallen wie die Früchte des Feigenbaums, den der Sturm rüttelt.
 Welch grausiger Hagel!
 Es schwillt <104>das Meer und steiget höher [124]und immer <105>höher! 
 Ha! Immer höher!
-Es schwillt das Meer und steiget höher!
+Es schwillt das Meer und steiget immer höher!
 
 [125]Es schwillt das <106>Meer und es steiget immer höher und höher noch! Rettet euch un die berge dort!
 O welch grauenvolle Finsternis! Die Sonne geht auf, und dennoch wird es nimmer helle, nimmer helle!
