@@ -223,7 +223,6 @@ Die [190]Menschen suchen nur den Tod, und finden sie ihn nicht!
 
 <158>[191]Höret! Höret! Der sechste Engel bläst!
 Gottes, Gericht! Des Herrn Gericht!
-Gottes Zorn vernichtet euch!
 
 [192]<159>O Not! Die Engel, dort wachend am Euphratstrom, sie wurden abgelöst und führen Millionen Reiter.
 
