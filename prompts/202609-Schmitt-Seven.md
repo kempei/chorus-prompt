@@ -193,7 +193,7 @@ und des Lammes <118>ist da!
 Ihr [136]Berge, fallet über uns!
 <119>und verberget, ach, verberget uns
 
-[137]<120>vor dem Angesicht des Herrn und der Herren!
+[137]<120>vor dem Angesicht des Herrn der Herren!
 Denn gekommen ist heute der <121>Tag seines Zornes!
 Wer kann da bestehen?
 
