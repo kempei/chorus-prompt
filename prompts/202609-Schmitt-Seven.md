@@ -155,7 +155,7 @@ O seht, der Mond ist rot
 <101>[121]Schreckliches Brausen! Seht, es fallen die Bäume! Es brennet der Wald! Ach, wie glühet die Luft!
 
 <102>[122]Seht! Die Sterne fallen auf die Erde!
-Sie fallen wie die Früchte des Feigenbaums, den der Sturm rüttelt.
+Seht! Sie fallen wie die Früchte des Feigenbaums, den der Sturm rüttelt.
 
 <103>[123]Die Sterne fallen auf die Erde!
 Welch grausiger Hagel!
