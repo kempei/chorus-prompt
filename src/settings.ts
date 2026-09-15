@@ -9,6 +9,7 @@ const DEFAULT_SETTINGS: Settings = {
   showPageNumber: true,
   showTitle: true,
   upDownMode: 'practice',
+  doubleClickHidesDirectly: false,
 }
 
 export function loadSettings(): Settings {

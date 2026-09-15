@@ -56,8 +56,14 @@ export interface Settings {
   showTitle: boolean
   /**
    * Default UP/DOWN unit for a new performance. The performer can change it
-   * mid-performance via the glasses-side double-tap picker (performer.ts);
+   * mid-performance via the glasses-side double-tap menu (performer.ts);
    * that in-session choice doesn't write back here.
    */
   upDownMode: UpDownMode
+  /**
+   * When true, DOUBLE_CLICK on the glasses enters hidden mode immediately
+   * instead of opening the picker menu — for wearers who only ever use
+   * double-tap to hide and don't want the extra menu step in the way.
+   */
+  doubleClickHidesDirectly: boolean
 }

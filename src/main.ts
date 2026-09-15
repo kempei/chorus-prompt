@@ -25,7 +25,7 @@ let view: { kind: 'library' } | { kind: 'performing'; song: Song; handle: Perfor
 
 function render() {
   if (view.kind === 'performing') {
-    renderPerforming(root, view.song, () => view.kind === 'performing' && view.handle?.stop())
+    renderPerforming(root, view.song, settings, () => view.kind === 'performing' && view.handle?.stop())
     return
   }
   renderLibrary(root, songs, syncingIds, settings, {

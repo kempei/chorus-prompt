@@ -72,6 +72,11 @@ export function renderLibrary(
             <option value="heading3" ${settings.upDownMode === 'heading3' ? 'selected' : ''}>見出し3ごと</option>
           </select>
         </label>
+
+        <label style="${checkboxLabelStyle}">
+          <input name="doubleClickHidesDirectly" type="checkbox" ${settings.doubleClickHidesDirectly ? 'checked' : ''} />
+          ダブルタップで直接非表示にする（メニューを表示しない）
+        </label>
       </form>
     </main>
   `
@@ -107,17 +112,21 @@ export function renderLibrary(
       showTitle: data.get('showTitle') != null,
       showPageNumber: data.get('showPageNumber') != null,
       upDownMode: asUpDownMode(data.get('upDownMode')),
+      doubleClickHidesDirectly: data.get('doubleClickHidesDirectly') != null,
     })
   })
 }
 
-export function renderPerforming(root: HTMLElement, song: Song, onBack: () => void): void {
+export function renderPerforming(root: HTMLElement, song: Song, settings: Settings, onBack: () => void): void {
+  const doubleClickHelp = settings.doubleClickHidesDirectly
+    ? 'ダブルタップ: 非表示にする'
+    : 'ダブルタップ: メニューを開く（非表示 / 移動単位の選択）'
   root.innerHTML = `
     <main style="margin:auto;padding:24px;max-width:640px;box-sizing:border-box;text-align:center;">
       <h1 style="font-size:18px;font-weight:600;margin:0 0 8px;">${escapeHtml(song.title)}</h1>
       <p style="font-size:13px;color:#919191;margin:0 0 4px;">グラスに表示中 — R1 / タッチパッドで操作してください</p>
       <p style="font-size:12px;color:#7B7B7B;margin:0 0 20px;">
-        クリック: 次へ&emsp;上スワイプ: 前の単位へ&emsp;下スワイプ: 次の単位へ&emsp;ダブルタップ: 移動単位を選択
+        クリック: 次へ&emsp;上スワイプ: 前の単位へ&emsp;下スワイプ: 次の単位へ&emsp;${doubleClickHelp}
       </p>
       <button id="back-btn" style="${buttonStyle('#E5716A')}">
         終了してライブラリに戻る（グラスの表示も終了します）

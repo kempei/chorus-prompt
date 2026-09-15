@@ -14,6 +14,7 @@ import {
   BODY_H,
   BODY_PAD,
   BODY_BORDER,
+  BODY_INNER,
   FOOTER_Y,
   FOOTER_H,
   FOOTER_PAD,
@@ -28,11 +29,14 @@ import {
 //   UP/DOWN      -> jump to the previous/next boundary of the current
 //                   UP/DOWN unit (display window / practice number / page
 //                   number / heading2 / heading3 — see UP_DOWN_MODES below)
-//   DOUBLE_CLICK -> open an on-glasses picker to change that unit for the
-//                   rest of this performance
+//   DOUBLE_CLICK -> open an on-glasses menu: change that unit for the rest
+//                   of this performance, or hide the display (see "hidden
+//                   mode" below) — CLICK anywhere restores it. Or, if
+//                   Settings.doubleClickHidesDirectly is on, skip the menu
+//                   and hide immediately (still CLICK to restore).
 //
 // The phone's Settings.upDownMode (src/settings.ts, src/ui.ts) only supplies
-// the *starting* unit for a new performance; the double-tap picker below is
+// the *starting* unit for a new performance; the double-tap menu below is
 // the only way to change it afterwards, and that choice is session-local
 // (never written back to Settings) per user decision.
 //
@@ -43,7 +47,17 @@ import {
 // reaching the app (per user decision — never verified in the simulator,
 // which doesn't emulate that firmware behavior either).
 //
-// The picker is a plain hand-rolled list rendered into the existing body/
+// Hidden mode ("非表示にする", the menu's first item): blanks both containers
+// down to a single centered "・" and ignores every ring gesture except
+// CLICK, which restores the exact display state that was showing before —
+// per user decision, so a wearer can black out the glasses mid-performance
+// without losing their place. The dot is deliberate: a fully blank screen
+// would be indistinguishable from the glasses' own hardware silent mode
+// (which the app has no visibility into or control over) going dark on its
+// own, so a static single glyph gives an unambiguous "the app did this on
+// purpose" signal once the wearer knows to look for it.
+//
+// The menu is a plain hand-rolled list rendered into the existing body/
 // footer TextContainers (cursor drawn as "> "), not the SDK's
 // ListContainerProperty/MenuContainerProperty. Those exist (SDK 0.0.14) and
 // would auto-manage selection, but their selection-event schema has never
@@ -73,6 +87,21 @@ const UP_DOWN_MODE_LABELS: Record<UpDownMode, string> = {
   heading3: '見出し3ごと',
 }
 
+// Items shown top-to-bottom in the double-tap menu: the hide action first,
+// then the existing UP/DOWN unit choices. A discriminated union rather than
+// a flat string list because confirming an item does one of two different
+// things (see confirmPicker).
+type PickerItem = { kind: 'hide'; label: string } | { kind: 'mode'; mode: UpDownMode; label: string }
+
+const PICKER_ITEMS: PickerItem[] = [
+  { kind: 'hide', label: '非表示にする' },
+  ...UP_DOWN_MODES.map(mode => ({ kind: 'mode' as const, mode, label: UP_DOWN_MODE_LABELS[mode] })),
+]
+
+// Distinguishes an intentional app-level hide from the glasses' own hardware
+// silent mode going dark — see the "Hidden mode" file-level comment above.
+const HIDDEN_DOT = '・'
+
 export interface PerformanceHandle {
   stop(): void
 }
@@ -91,8 +120,11 @@ export async function startPerformance(
   // The default from Settings, changeable for the rest of this performance
   // via the double-tap picker below — never written back to Settings.
   let upDownMode: UpDownMode = settings.upDownMode
-  // Non-null while the double-tap picker is on screen; index into UP_DOWN_MODES.
+  // Non-null while the double-tap menu is on screen; index into PICKER_ITEMS.
   let picker: { selection: number } | null = null
+  // True while the display is blanked via the menu's "非表示にする"; only
+  // CLICK is honored in this state (see the file-level "Hidden mode" comment).
+  let hidden = false
 
   // Whether a number/title is meaningful anywhere in this song — spec.md:
   // an item stuck at its default value the whole way through is forced off
@@ -324,34 +356,39 @@ export async function startPerformance(
     return next
   }
 
-  // --- Double-tap UP/DOWN-unit picker ---------------------------------
+  // --- Double-tap menu (UP/DOWN-unit picker + hide action) ------------
   // A plain hand-rolled list drawn into the same body/footer containers
   // (cursor as "> "), not ListContainerProperty/MenuContainerProperty — see
   // the file-level comment for why.
 
   function openModePicker() {
-    picker = { selection: UP_DOWN_MODES.indexOf(upDownMode) }
+    picker = { selection: PICKER_ITEMS.findIndex(item => item.kind === 'mode' && item.mode === upDownMode) }
     renderPicker()
   }
 
   function movePicker(direction: 1 | -1) {
     if (!picker) return
-    picker.selection = Math.min(Math.max(picker.selection + direction, 0), UP_DOWN_MODES.length - 1)
+    picker.selection = Math.min(Math.max(picker.selection + direction, 0), PICKER_ITEMS.length - 1)
     renderPicker()
   }
 
   function confirmPicker() {
     if (!picker) return
-    upDownMode = UP_DOWN_MODES[picker.selection]
+    const item = PICKER_ITEMS[picker.selection]
     picker = null
-    render()
+    if (item.kind === 'hide') {
+      enterHidden()
+    } else {
+      upDownMode = item.mode
+      render()
+    }
   }
 
   function renderPicker() {
     if (!picker) return
     const bodyText = [
-      'UP/DOWNの単位を選択',
-      ...UP_DOWN_MODES.map((mode, i) => `${i === picker!.selection ? '>' : ' '} ${UP_DOWN_MODE_LABELS[mode]}`),
+      'メニュー',
+      ...PICKER_ITEMS.map((item, i) => `${i === picker!.selection ? '>' : ' '} ${item.label}`),
     ].join('\n')
 
     blinkTimers.forEach(id => window.clearTimeout(id))
@@ -377,6 +414,45 @@ export async function startPerformance(
     })
   }
 
+  // --- Hidden mode (menu's "非表示にする") ------------------------------
+  // See the file-level "Hidden mode" comment for why this shows a dot
+  // rather than going fully blank.
+
+  function enterHidden() {
+    hidden = true
+    blinkTimers.forEach(id => window.clearTimeout(id))
+    blinkTimers = []
+
+    rendering = rendering.then(async () => {
+      await bridge.textContainerUpgrade(
+        new TextContainerUpgrade({
+          containerID: BODY_CONTAINER_ID,
+          containerName: 'body',
+          content: buildHiddenBodyText(),
+          textColor: settings.brightness,
+        }),
+      )
+      await bridge.textContainerUpgrade(
+        new TextContainerUpgrade({
+          containerID: FOOTER_CONTAINER_ID,
+          containerName: 'footer',
+          content: '',
+          textColor: footerDimBrightness(),
+        }),
+      )
+    })
+  }
+
+  // Restores whatever was on screen before hidden mode — blockIndex/
+  // lineOffset never changed while hidden, so a plain render() puts the
+  // wearer back exactly where they left off, with no spurious footer blink
+  // (lastFooterText was left untouched by enterHidden, so render() sees no
+  // change if nothing else moved in the meantime).
+  function exitHidden() {
+    hidden = false
+    render()
+  }
+
   let stopped = false
   function stop() {
     if (stopped) return
@@ -394,6 +470,13 @@ export async function startPerformance(
 
     if (sysType === OsEventTypeList.SYSTEM_EXIT_EVENT || sysType === OsEventTypeList.ABNORMAL_EXIT_EVENT) {
       stop()
+      return
+    }
+
+    if (hidden) {
+      if (sysType === OsEventTypeList.CLICK_EVENT || textType === OsEventTypeList.CLICK_EVENT) exitHidden()
+      // Everything else (UP/DOWN, double-click) is ignored while hidden —
+      // only a tap restores, per user decision.
       return
     }
 
@@ -418,7 +501,8 @@ export async function startPerformance(
       return
     }
     if (sysType === OsEventTypeList.DOUBLE_CLICK_EVENT || textType === OsEventTypeList.DOUBLE_CLICK_EVENT) {
-      openModePicker()
+      if (settings.doubleClickHidesDirectly) enterHidden()
+      else openModePicker()
     }
   })
 
@@ -470,6 +554,18 @@ function pxToSpaces(px: number): number {
   const spaceWidth = (getAdvW(32) + 8) >> 4 // mirrors pretext's own px rounding for one space glyph
   if (spaceWidth <= 0) return 0
   return Math.floor(px / spaceWidth) // round down — see FOOTER_SAFETY_MARGIN_PX above
+}
+
+// The hidden-mode dot (see the file-level "Hidden mode" comment), centered
+// both ways within the body container: horizontally via the same
+// pixel-metric space-padding as the footer (padTo with an empty "current"),
+// vertically by placing it on the body's middle text line and leaving the
+// rest blank.
+function buildHiddenBodyText(): string {
+  const targetLeftEdge = (BODY_INNER.width - getTextWidth(HIDDEN_DOT)) / 2
+  const dotLine = padTo('', targetLeftEdge) + HIDDEN_DOT
+  const middleLine = Math.floor(MAX_BODY_LINES / 2)
+  return Array.from({ length: MAX_BODY_LINES }, (_, i) => (i === middleLine ? dotLine : '')).join('\n')
 }
 
 // CJK-titled songs get a tighter budget — narrow glyphs read fine at 20
