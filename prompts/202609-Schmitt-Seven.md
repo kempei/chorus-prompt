@@ -300,13 +300,13 @@ Singt Halleluhah!
 
 ## 19 男声合唱
 
-[244]<200>Wir danken dir, o Herr, Allmächtiger Gott, der da ist und der da war, daß du deine große Macht an dich genommen hast und he↑rrschest.
+[244]<200>Wir dan=ken dir_, | o Herr_, | All!mä_chti^ger Gott__, || der_ da ist || und der da war_4, |3 daß_ du deine !gro=!ße Macht || an ^dich__ ge!no^mmen hast || ^und he_^_rrschest.
 
-Die Vö-lker sind zornig geworden, da kam auch dein Zorn und die Zeit, zu richten die Toten
-und zu geben den Lohn deinen Knechten, den Propheten und den Heiligen,
+Die Vö_lker sind zo=rnig geworden, | da kam auch ^dein_ Zorn_ | !und !die Zeit-, | zu ri_chten=die To_ten_
+| und_ zu ge_ben den ^Lohn_ dei!nen Knechten, | !den_ !Prophe_4ten_ !und_ !den Hei=ligen,
 
-und denen, die deinen Namen fürchten, den Kleinen und den Großen.
-Aber auch zu verderben jene, die die Erde verderbet haben.
+|| !und de=nen, | die deinen ^Na-_!men fürch_ten, || !den Kleinen | !und_ !den Gro_4ßen_.
+|||| Aber auch_ !zu !ver__derben je_ne_, | die_ die ^Er__^de | ver!der_3-^bet ha_6ben_6.
 
 ## 20 Amen
 
